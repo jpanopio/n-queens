@@ -79,28 +79,17 @@
     //
     // test if a specific row on this board contains a conflict
     hasRowConflictAt: function(rowIndex) {
-      var conflictBoolVal = false;
-
-      var alreadyHasQueen = false;
-      for (var i=0; i< this.rows().length; i++){
-        if (this.rows()[rowIndex][i] === 1 && alreadyHasQueen === true){
-          conflictBoolVal = true;
-        }
-        else if (this.rows()[rowIndex][i] === 1 && alreadyHasQueen === false){
-          alreadyHasQueen = true;
-        }
-      }
-
-      return conflictBoolVal;
+      var singleRow = this.rows()[rowIndex].sort();
+      return singleRow[singleRow.length-1] === 1 && singleRow[singleRow.length-2] === 1;
     },
 
     // test if any rows on this board contain conflicts
     hasAnyRowConflicts: function() {
-      var conflictBoolVal = false;
-      for (var i=0; i<this.rows().length; i++){
-        conflictBoolVal = conflictBoolVal || this.hasRowConflictAt(i);
+      var boolValue = false;
+      for(var i = 0; i < this.rows().length; i++) {
+        boolValue = boolValue || this.hasRowConflictAt(i);
       }
-      return conflictBoolVal;
+      return boolValue;
     },
 
 
@@ -110,29 +99,22 @@
     //
     // test if a specific column on this board contains a conflict
     hasColConflictAt: function(colIndex) {
-      var conflictBoolVal = false;
-
-      var alreadyHasQueen = false;
-
+      var column = [];
       for (var i=0; i< this.rows().length; i++){
-        if (this.rows()[i][colIndex] === 1 && alreadyHasQueen === true){
-          conflictBoolVal = true;
-        }
-        else if (this.rows()[i][colIndex] === 1 && alreadyHasQueen === false){
-          alreadyHasQueen = true;
-        }
+        column.push(this.rows()[i][colIndex]);
       }
+      column.sort();
 
-      return conflictBoolVal;
+      return column[column.length-1] === 1 && column[column.length-2] === 1;
     },
 
     // test if any columns on this board contain conflicts
     hasAnyColConflicts: function() {
-      var conflictBoolVal = false;
-      for (var i=0; i<this.rows().length; i++){
-        conflictBoolVal = conflictBoolVal || this.hasColConflictAt(i);
+      var boolValue = false;
+      for(var i = 0; i < this.rows().length; i++) {
+        boolValue = boolValue || this.hasColConflictAt(i);
       }
-      return conflictBoolVal;
+      return boolValue;
     },
 
 
@@ -142,39 +124,25 @@
     //
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
-      var conflictBoolVal = false;
-
-      var alreadyHasQueen = false;
-
-      for (var i=0; i< this.rows().length; i++){
-        if (this.rows()[i][colIndex] === 1 && alreadyHasQueen === true){
-          conflictBoolVal = true;
+      var count = 0;
+      for (var i=0; i<this.rows().length; i++){
+        if(this.rows()[i][majorDiagonalColumnIndexAtFirstRow] === 1){
+          count++;
         }
-        else if (this.rows()[i][colIndex] === 1 && alreadyHasQueen === false){
-          alreadyHasQueen = true;
-        }
+        majorDiagonalColumnIndexAtFirstRow++;
+        //debugger;
       }
-
-      return conflictBoolVal;
-      return false;
+      console.log(count);
+      return count >= 2;
     },
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
-      var conflictBoolVal = false;
-
-      var alreadyHasQueen = false;
-
-      for (var i=0; i< this.rows().length; i++){
-        if (this.rows()[i][colIndex] === 1 && alreadyHasQueen === true){
-          conflictBoolVal = true;
-        }
-        else if (this.rows()[i][colIndex] === 1 && alreadyHasQueen === false){
-          alreadyHasQueen = true;
-        }
+      var boolValue = false;
+      for(var i = -(this.rows().length - 1); i < this.rows().length; i++) {
+        boolValue = boolValue || this.hasMajorDiagonalConflictAt(i);
       }
-
-      return conflictBoolVal;
+      return boolValue;
     },
 
 
