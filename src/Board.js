@@ -132,7 +132,6 @@
         majorDiagonalColumnIndexAtFirstRow++;
         //debugger;
       }
-      console.log(count);
       return count >= 2;
     },
 
