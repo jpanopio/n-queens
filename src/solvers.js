@@ -31,81 +31,141 @@ window.findNRooksSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
+  var count = 1;
+  for(var i = 1; i <= n; i++) {
+    count *= i;
+  }
+  return count;
+};
+
+// return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
+window.findNQueensSolution = function(n) {
   // Generate empty board with size n x n
   var board = new Board({n:n});
   // Create solutionStorage = []
   var solutionStorage = {};
-  // Create variable piecesLeft = n
-  var piecesLeft = n;
 
-  // Function generateSolutions, takes piecesLeft and currentSolution
-  var generateSolutions = function(pieces, currentSolution) {
-    // If piecesLeft is 0:
-    if(pieces === 0) {
-      var count = 0;
-      // Add currentSolution to storage
-      for(var i = 0; i < currentSolution.rows().length; i++) {
-        for(var j = 0; j < currentSolution.rows().length; j++) {
-          if(currentSolution.rows()[i][j] === 1) {
-            count++;
-          }
-        }
+  if(n === 0) {
+    return [];
+  }
+  if(n === 1 ) {
+    return [[1]];
+  }
+  if(n === 2 || n === 3) {
+    return new Board({n:n}).rows();
+  }
+  var generateSolutions = function(pieces, currentSolution, numPieces) {
+    if (Object.keys(solutionStorage)){
+      for(var key in solutionStorage) {
+        return;
       }
-      if(count === n) {
+    }
+    if(pieces === 0) {
+      if(numPieces === n) {
         solutionStorage[JSON.stringify(currentSolution.rows())] = "YAY";
       }
       return;
     }
-  
-    // Boolean variable addedPiece initialize to false
 
-    // For every position on the board
+    var addedPiece = false;
     for(var i = 0; i < n; i++) {
       for(var j = 0; j < n; j++) {
-        var addedPiece = false;
+        if (addedPiece) {
+          break;
+        } 
         // If addedPiece is false:
-        if(!addedPiece) {
+        if(!addedPiece && currentSolution.rows()[i][j] === 0) {
           // Try to add a piece
           currentSolution.togglePiece(i, j);
           // If there are conflicts: 
-          if(currentSolution.hasAnyRooksConflicts()) {
+          if(currentSolution.hasAnyQueensConflicts()) {
             // Toggle the piece off
             currentSolution.togglePiece(i, j);
           } else {
           // Else
             // addedPiece = true
             addedPiece = true;
+            numPieces++;
           }
-        }
-        // If addedPiece = true
-        if(addedPiece) {  
-          console.log("We are on round: " + pieces + " Current solution is: " + JSON.stringify(currentSolution.rows()));    
-          // Recursively call generateSolutions
-          generateSolutions(pieces - 1, new Board(currentSolution.rows()));
+          // If addedPiece = true
+          if(addedPiece) { 
+            generateSolutions(pieces - 1, new Board(currentSolution.rows()), numPieces);
+            addedPiece = false;
+            numPieces = numPieces - 1;
+            currentSolution.togglePiece(i,j); 
+          }
         }
       }
     }
   };
 
-  generateSolutions(piecesLeft, board);
+  generateSolutions(n, board, 0);
+  var countKey = 0;
+  for(var key in solutionStorage) {
+    countKey++;
+    console.log(key);
+    return JSON.parse(key);
+  }
+
+  // Return array of solution boards
+  return 4;
+
+};
+
+window.countNQueensSolutions = function(n) {
+  // Generate empty board with size n x n
+  var board = new Board({n:n});
+  // Create solutionStorage = []
+  var solutionStorage = {};
+
+  // Function generateSolutions, takes piecesLeft and currentSolution
+  var generateSolutions = function(pieces, currentSolution, numPieces) {
+    if(pieces === 0) {
+      if(numPieces === n) {
+        solutionStorage[JSON.stringify(currentSolution.rows())] = "YAY";
+      }
+      return;
+    }
+
+    var addedPiece = false;
+    for(var i = 0; i < n; i++) {
+      for(var j = 0; j < n; j++) {
+        if (addedPiece) {
+          break;
+        } 
+        // If addedPiece is false:
+        if(!addedPiece && currentSolution.rows()[i][j] === 0) {
+          // Try to add a piece
+          currentSolution.togglePiece(i, j);
+          // If there are conflicts: 
+          if(currentSolution.hasAnyQueensConflicts()) {
+            // Toggle the piece off
+            currentSolution.togglePiece(i, j);
+          } else {
+          // Else
+            // addedPiece = true
+            addedPiece = true;
+            numPieces++;
+          }
+          // If addedPiece = true
+          if(addedPiece) { 
+            generateSolutions(pieces - 1, new Board(currentSolution.rows()), numPieces);
+            addedPiece = false;
+            numPieces = numPieces - 1;
+            currentSolution.togglePiece(i,j); 
+          }
+        }
+      }
+    }
+  };
+
+  generateSolutions(n, board, 0);
   var countKey = 0;
   for(var key in solutionStorage) {
     countKey++;
     console.log(key);
   }
-  debugger; 
+
   // Return array of solution boards
   return countKey;
-};
-
-// return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
-window.findNQueensSolution = function(n) {
-
-};
-
-window.countNQueensSolutions = function(n) {
-  var solution = undefined; //fixme
-
-  console.log('Number of solutions for ' + n + ' queens:', solutionCount);
-  return solutionCount;
 };
